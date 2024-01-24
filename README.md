@@ -1,3 +1,13 @@
+# Kropad's Smart Contracts
+
+This repository contains the source code of the smart contracts of [Kropad](https://kropad.com).
+
+This project is licensed under [AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html).
+
+We use [Foundry](https://github.com/foundry-rs/foundry) for developing the smart contracts.
+
+You can find detailed information about [Foundry](https://github.com/foundry-rs/foundry) below.
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
