@@ -1,0 +1,13 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": ["JuanBlanco.solidity"],
+            "settings": {
+                "editor.formatOnSave": true
+            }
+        }
+    }
+}
