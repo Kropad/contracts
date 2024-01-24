@@ -74,3 +74,7 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
+
+## Note
+
+Built with love, sweat and tears by [Berzan](https://berzan.org).
