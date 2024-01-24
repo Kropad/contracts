@@ -4,7 +4,10 @@
     },
     "customizations": {
         "vscode": {
-            "extensions": ["JuanBlanco.solidity"],
+            "extensions": [
+                "JuanBlanco.solidity",
+                "tamasfe.even-better-toml"
+            ],
             "settings": {
                 "editor.formatOnSave": true
             }
