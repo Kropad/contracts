@@ -1,67 +1,74 @@
 // SPDX-License-Identifier: AGPL-3.0
 pragma solidity ^0.8.13;
 
-import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {Token} from "./Token.sol";
 
 contract Staking {
+    /*//////////////////////////////////////////////////////////////
+                                 STRUCTS
+    //////////////////////////////////////////////////////////////*/
+
     struct Stake {
-        uint256 lastStakePoints;
-        uint256 lastStakeTime;
-        uint256 stakeAmount;
-        uint256 stakeTime;
+        uint256 snapshotPoints;
+        uint256 snapshotTimestamp;
+        uint256 amount;
     }
 
-    Stake private _stake;
+    /*//////////////////////////////////////////////////////////////
+                                STORAGE
+    //////////////////////////////////////////////////////////////*/
 
-    IERC20 private immutable token;
+    Token private immutable token;
 
     mapping(address => Stake) getStake;
 
+    /*//////////////////////////////////////////////////////////////
+                               CONSTRUCTOR
+    //////////////////////////////////////////////////////////////*/
+
     constructor(address _token) {
-        token = ERC20(_token);
+        token = Token(_token);
     }
+
+    /*//////////////////////////////////////////////////////////////
+                                 LOGIC
+    //////////////////////////////////////////////////////////////*/
 
     function stake(uint256 amount) public {
-        uint tokenBalance = token.balanceOf(msg.sender);
-        require(tokenBalance >= amount, "insufficient funds");
-
-        _stake = getStake[msg.sender];
-
         bool success = token.transferFrom(msg.sender, address(this), amount);
+        require(success, "transfer didn't succeed");
 
-        if (success) {
-            if (_stake.stakeAmount == 0) {
-                _stake.stakeTime = block.timestamp;
-                _stake.stakeAmount = amount;
-            } else {
-                _stake.lastStakePoints +=
-                    _stake.stakeAmount *
-                    _stake._stake.stakeAmount += amount;
-                _stake.LastStakeTime = block.timestamp;
-            }
-        } else {
-            revert("Staking Failed");
+        Stake storage _stake = getStake[msg.sender];
+
+        if (_stake.snapshotTimestamp != 0) {
+            _stake.snapshotPoints +=
+                (block.timestamp - _stake.snapshotTimestamp) *
+                _stake.amount;
         }
+
+        _stake.amount += amount;
+        _stake.snapshotTimestamp = block.timestamp;
     }
 
-    function unstake(uint256 amount) public {
-        require(token.balanceOf(msg.sender) >= amount, "insufficient funds");
-        token.transferFrom(address(this), msg.sender, amount);
-        _stake = getStake[msg.sender];
-        _stake.stakeAmount -= amount;
+    function unstake() external {
+        Stake storage _stake = getStake[msg.sender];
+
+        require(_stake.amount > 0, "no _stake amount");
+
+        bool success = token.transfer(msg.sender, _stake.amount);
+        require(success, "transfer didn't succeed");
+
+        _stake.snapshotPoints = 0;
+        _stake.snapshotTimestamp = 0;
+        _stake.amount = 0;
     }
 
-    function points(address address_) external view returns (uint) {
-        return _points(address_);
-    }
+    function calculatePoints(address addr) public view returns (uint256) {
+        Stake storage _stake = getStake[addr];
 
-    function _points(address address_) internal view returns (uint) {
         return
-            (block.timestamp - lastStakeTime[address_]) * balanceOf[address_];
-    }
-
-    /* */
-    function getPoints(uint256 amount) public {
-        // get points logic
+            _stake.snapshotPoints +
+            (block.timestamp - _stake.snapshotTimestamp) *
+            _stake.amount;
     }
 }
