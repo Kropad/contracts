@@ -4,14 +4,11 @@ pragma solidity ^0.8.13;
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract Staking {
-    
-
     struct Stake {
         uint256 lastStakePoints;
         uint256 lastStakeTime;
         uint256 stakeAmount;
         uint256 stakeTime;
-
     }
 
     Stake private _stake;
@@ -25,36 +22,26 @@ contract Staking {
     }
 
     function stake(uint256 amount) public {
-
         uint tokenBalance = token.balanceOf(msg.sender);
         require(tokenBalance >= amount, "insufficient funds");
 
         _stake = getStake[msg.sender];
-        
-         
-         (bool success ) = token.transferFrom(msg.sender, address(this), amount);
-         
 
-         if(success) {
-        
-         if(_stake.stakeAmount == 0){
-         _stake.stakeTime = block.timestamp;
-         _stake.stakeAmount = amount;
-         }
+        bool success = token.transferFrom(msg.sender, address(this), amount);
 
-        else {
-          _stake.lastStakePoints += _stake.stakeAmount * _stake.
-         _stake.stakeAmount += amount;
-         _stake.LastStakeTime = block.timestamp;
-         
-        } 
-
-        }  
-         
-         else {
-             revert("Staking Failed");
-         }
-    
+        if (success) {
+            if (_stake.stakeAmount == 0) {
+                _stake.stakeTime = block.timestamp;
+                _stake.stakeAmount = amount;
+            } else {
+                _stake.lastStakePoints +=
+                    _stake.stakeAmount *
+                    _stake._stake.stakeAmount += amount;
+                _stake.LastStakeTime = block.timestamp;
+            }
+        } else {
+            revert("Staking Failed");
+        }
     }
 
     function unstake(uint256 amount) public {
@@ -65,17 +52,16 @@ contract Staking {
     }
 
     function points(address address_) external view returns (uint) {
-    return _points(address_);
+        return _points(address_);
     }
 
     function _points(address address_) internal view returns (uint) {
-    return (block.timestamp - lastStakeTime[address_]) * balanceOf[address_] ;
+        return
+            (block.timestamp - lastStakeTime[address_]) * balanceOf[address_];
     }
-
 
     /* */
     function getPoints(uint256 amount) public {
-        // get points logic 
+        // get points logic
     }
-
 }
